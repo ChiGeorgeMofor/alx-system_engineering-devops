@@ -1,2 +1,3 @@
 #!/bin/bash
-vincent staff
+chown -hR
+betty:holberton
