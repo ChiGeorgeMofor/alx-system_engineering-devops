@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Check if Nginx is already running
+if ! systemctl is-active --quiet nginx; then
+  # Start Nginx service
+  sudo service start nginx
+fi
+
+# Get all active IPv4 IPs
+ips=$(ip addr show | grep "inet " | grep -v "127.0.0.1" | awk '{print $2}')
+
+# Check if Nginx is listening on port 80 for each IP
+for ip in $ips; do
+  if ! ss -lnt | grep -q ":80.*$ip"; then
+    # Add new listen directive to Nginx configuration
+    echo "listen $ip:80;" >> /etc/nginx/conf.d/listen_ips.conf
+  fi
+done
+
+# Reload Nginx to apply changes
+sudo service  reload nginx
